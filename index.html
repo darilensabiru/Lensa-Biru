@@ -3,64 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lensa Biru | Jelajah Visual</title>
+    <title>Lensa Biru | Galeri Visual</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0f172a; }
-        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
-    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body class="text-slate-200">
+<body class="bg-slate-900 text-white font-sans">
 
-    <nav class="fixed w-full z-50 glass py-4 px-8 flex justify-between items-center">
-        <h1 class="text-xl font-bold tracking-tighter text-blue-400">LENSA<span class="text-white">BIRU</span></h1>
-        <div class="space-x-6 text-sm font-medium">
-            <a href="#" class="hover:text-blue-400 transition">Jelajah</a>
-            <a href="#" class="hover:text-blue-400 transition">Koleksi</a>
-            <a href="#" class="bg-blue-600 px-4 py-2 rounded-full text-white hover:bg-blue-500 transition">Admin Login</a>
-        </div>
+    <nav class="p-6 border-b border-slate-800 bg-slate-900/50 backdrop-blur-md sticky top-0 z-50">
+        <h1 class="text-2xl font-black tracking-tighter text-blue-500 text-center">LENSA BIRU</h1>
     </nav>
 
-    <header class="pt-32 pb-16 px-8 text-center">
-        <h2 class="text-5xl md:text-7xl font-bold mb-4 tracking-tight">Jelajah Tanpa <span class="text-blue-500">Batas.</span></h2>
-        <p class="text-slate-400 max-w-2xl mx-auto text-lg">Platform kurasi foto dan video hasil tangkapan Lensa Biru. Menangkap momen, menceritakan petualangan.</p>
-    </header>
+    <main class="p-6 max-w-5xl mx-auto">
+        <div id="gallery" class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <p class="text-center col-span-full opacity-50">Sedang memanggil karya...</p>
+        </div>
+    </main>
 
-    <main class="max-w-7xl mx-auto px-8 pb-20">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            
-            <div class="group relative overflow-hidden rounded-2xl aspect-[4/5] bg-slate-800">
-                <img src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=800&q=80" 
-                     class="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110 opacity-80 group-hover:opacity-100" 
-                     alt="Nature">
-                <div class="absolute bottom-0 left-0 p-6 w-full bg-gradient-to-t from-black/90 to-transparent">
-                    <span class="text-xs font-bold text-blue-400 uppercase tracking-widest">Landscape</span>
-                    <h3 class="text-lg font-semibold">Garis Cakrawala</h3>
-                </div>
-            </div>
+    <script>
+        // KONEKSI DATABASE
+        const SB_URL = "https://nifznlmuohiwobkkonwl.supabase.co"; // URL Kamu
+        const SB_KEY = "sb_publishable_8obDThzvXaier2lH_MEsf g_wExnzb3d"; // Key Kamu
+        const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
 
-            <div class="group relative overflow-hidden rounded-2xl aspect-[4/5] bg-slate-800 border-2 border-dashed border-slate-700 flex flex-col items-center justify-center">
-                <div class="text-blue-500 mb-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                </div>
-                <p class="text-slate-500 text-sm">Pratinjau Video</p>
-                <div class="absolute bottom-0 left-0 p-6 w-full bg-gradient-to-t from-black/90 to-transparent text-left">
-                    <span class="text-xs font-bold text-blue-400 uppercase tracking-widest">Cinematic</span>
-                    <h3 class="text-lg font-semibold">Ritme Kota</h3>
-                </div>
-            </div>
+        async function tampilkanKarya() {
+            const { data, error } = await supabaseClient
+                .from('posts')
+                .select('*')
+                .order('created_at', { ascending: false });
 
-            <div class="group relative overflow-hidden rounded-2xl aspect-[4/5] bg-slate-800">
-                <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=800&q=80" 
-                     class="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110 opacity-80 group-hover:opacity-100" 
-                     alt="Forest">
-                <div class="absolute bottom-0 left-0 p-6 w-full bg-gradient-to-t from-black/90 to-transparent text-left">
-                    <span class="text-xs font-bold text-blue-400 uppercase tracking-widest">Nature</span>
-                    <h3 class="text-lg font-semibold">Hutan Pinus</h3>
+            const wadahGallery = document.getElementById('gallery');
+            wadahGallery.innerHTML = '';
+
+            if (data && data.length > 0) {
+                data.forEach(item => {
+                    const card = `
+                        <div class="bg-slate-800 rounded-xl overflow-hidden shadow-lg border border-slate-700">
+                            <img src="${item.image_url}" class="w-full aspect-square object-cover">
+                            <div class="p-4">
+                                <h3 class="font-bold text-lg text-blue-300">${item.title}</h3>
+                            </div>
+                        </div>
+                    `;
+                    wadahGallery.innerHTML += card;
+                });
+            } else {
+                wadahGallery.innerHTML = '<p class="text-center col-span-full py-10">Belum ada foto. Upload dulu lewat halaman Admin!</p>';
+            }
+        }
+
+        tampilkanKarya();
+    </script>
+</body>
+</html>
                 </div>
             </div>
 
