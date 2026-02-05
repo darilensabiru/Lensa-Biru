@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin | Lensa Biru</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-white flex items-center justify-center min-h-screen">
+    <div class="bg-slate-800 p-8 rounded-2xl shadow-xl w-full max-w-md">
+        <h2 class="text-2xl font-bold mb-6 text-center text-blue-400">Admin Lensa Biru</h2>
+        <div class="space-y-4">
+            <div>
+                <label class="block text-sm mb-2">Password Akses</label>
+                <input type="password" id="pass" class="w-full p-3 rounded bg-slate-700 border border-slate-600 focus:outline-none focus:border-blue-500">
+            </div>
+            <button onclick="checkPass()" class="w-full bg-blue-600 py-3 rounded-lg font-bold hover:bg-blue-500 transition">Masuk Dashboard</button>
+        </div>
+        <p id="msg" class="mt-4 text-red-400 text-sm text-center hidden">Password salah, coba lagi!</p>
+    </div>
+
+    <script>
+        function checkPass() {
+            const pass = document.getElementById('pass').value;
+            // Ganti 'lensabiru2026' dengan password yang kamu mau
+            if(pass === 'lensabiru2026') {
+                alert('Selamat datang Admin! Fitur upload sedang disiapkan.');
+                // Nanti kita arahkan ke halaman upload asli
+            } else {
+                document.getElementById('msg').classList.remove('hidden');
+            }
+        }
+    </script>
+</body>
+</html>
+
