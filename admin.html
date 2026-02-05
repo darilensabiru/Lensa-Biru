@@ -5,32 +5,72 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin | Lensa Biru</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body class="bg-slate-900 text-white flex items-center justify-center min-h-screen">
-    <div class="bg-slate-800 p-8 rounded-2xl shadow-xl w-full max-w-md">
-        <h2 class="text-2xl font-bold mb-6 text-center text-blue-400">Admin Lensa Biru</h2>
+<body class="bg-slate-900 text-white p-6">
+    <div class="max-w-md mx-auto bg-slate-800 p-8 rounded-2xl shadow-xl border border-slate-700">
+        <h2 class="text-2xl font-bold mb-6 text-blue-400 text-center uppercase tracking-widest">Post Lensa Biru</h2>
+        
         <div class="space-y-4">
             <div>
-                <label class="block text-sm mb-2">Password Akses</label>
-                <input type="password" id="pass" class="w-full p-3 rounded bg-slate-700 border border-slate-600 focus:outline-none focus:border-blue-500">
+                <label class="block text-xs font-semibold text-slate-400 mb-1 uppercase">Judul Karya</label>
+                <input type="text" id="title" placeholder="Misal: Senja di Jakarta" class="w-full p-3 rounded bg-slate-700 border border-slate-600 focus:outline-none focus:border-blue-500 transition">
             </div>
-            <button onclick="checkPass()" class="w-full bg-blue-600 py-3 rounded-lg font-bold hover:bg-blue-500 transition">Masuk Dashboard</button>
+            <div>
+                <label class="block text-xs font-semibold text-slate-400 mb-1 uppercase">Link Foto (URL)</label>
+                <input type="text" id="url" placeholder="Paste link fotomu di sini" class="w-full p-3 rounded bg-slate-700 border border-slate-600 focus:outline-none focus:border-blue-500 transition">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-400 mb-1 uppercase">Kategori</label>
+                <select id="type" class="w-full p-3 rounded bg-slate-700 border border-slate-600 focus:outline-none">
+                    <option value="image">Foto</option>
+                    <option value="video">Video</option>
+                </select>
+            </div>
+            <button onclick="uploadData()" id="btnUpload" class="w-full bg-blue-600 py-3 rounded-lg font-bold hover:bg-blue-500 transition shadow-lg shadow-blue-900/20">Publish Sekarang</button>
+            <p id="status" class="text-center text-sm font-medium mt-4 hidden"></p>
         </div>
-        <p id="msg" class="mt-4 text-red-400 text-sm text-center hidden">Password salah, coba lagi!</p>
     </div>
 
     <script>
-        function checkPass() {
-            const pass = document.getElementById('pass').value;
-            // Ganti 'lensabiru2026' dengan password yang kamu mau
-            if(pass === 'lensabiru2026') {
-                alert('Selamat datang Admin! Fitur upload sedang disiapkan.');
-                // Nanti kita arahkan ke halaman upload asli
+        // MASUKKAN KUNCI KAMU DI SINI
+        const SB_URL = "https://nifznlmuohiwobkkonwl.supabase.co";
+        const SB_KEY = "sb_publishable_8obDThzvXaier2lH_MEsfg_wExnzb3o"; 
+        
+        const _supabase = supabase.createClient(SB_URL, SB_KEY);
+
+        async function uploadData() {
+            const title = document.getElementById('title').value;
+            const url = document.getElementById('url').value;
+            const type = document.getElementById('type').value;
+            const btn = document.getElementById('btnUpload');
+            const status = document.getElementById('status');
+
+            if(!title || !url) return alert("Lengkapi data dulu bosku!");
+
+            btn.disabled = true;
+            btn.innerText = "Sedang Mengirim...";
+            status.classList.remove('hidden', 'text-red-400', 'text-green-400');
+            status.innerText = "Memproses ke database...";
+
+            const { data, error } = await _supabase
+                .from('posts')
+                .insert([{ title, image_url: url, type }]);
+
+            if (error) {
+                status.innerText = "Error: " + error.message;
+                status.classList.add('text-red-400');
+                btn.disabled = false;
+                btn.innerText = "Coba Lagi";
             } else {
-                document.getElementById('msg').classList.remove('hidden');
+                status.innerText = "✅ Karya berhasil dipublish!";
+                status.classList.add('text-green-400');
+                document.getElementById('title').value = "";
+                document.getElementById('url').value = "";
+                btn.disabled = false;
+                btn.innerText = "Publish Lagi";
             }
         }
     </script>
 </body>
 </html>
-
