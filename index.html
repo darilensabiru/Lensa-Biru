@@ -8,51 +8,52 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body class="bg-slate-900 text-white font-sans">
-
     <nav class="p-6 border-b border-slate-800 bg-slate-900/50 backdrop-blur-md sticky top-0 z-50">
-        <h1 class="text-2xl font-black tracking-tighter text-blue-500 text-center uppercase tracking-widest">Lensa Biru</h1>
+        <h1 class="text-2xl font-black tracking-tighter text-blue-500 text-center uppercase">Lensa Biru</h1>
     </nav>
 
     <main class="p-6 max-w-5xl mx-auto">
         <div id="gallery" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <p class="text-center col-span-full opacity-50 animate-pulse">Sedang memanggil karya...</p>
+            <p id="loading-text" class="text-center col-span-full opacity-50">Sedang memanggil karya...</p>
         </div>
     </main>
 
     <script>
-        // KONEKSI DATABASE
         const SB_URL = "https://nifznlmuohiwobkkonwl.supabase.co"; 
         const SB_KEY = "sb_publishable_8obDThzvXaier2lH_MEsfg_wExnzb3d"; 
         const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
 
         async function tampilkanKarya() {
-            const { data, error } = await supabaseClient
-                .from('posts')
-                .select('*')
-                .order('created_at', { ascending: false });
-
-            if (error) {
-                console.error("Error:", error);
-                return;
-            }
-
             const wadahGallery = document.getElementById('gallery');
-            wadahGallery.innerHTML = '';
+            
+            try {
+                const { data, error } = await supabaseClient
+                    .from('posts')
+                    .select('*')
+                    .order('created_at', { ascending: false });
 
-            if (data && data.length > 0) {
-                data.forEach(item => {
-                    const card = `
-                        <div class="bg-slate-800 rounded-xl overflow-hidden shadow-2xl border border-slate-700 transition-transform duration-300 hover:scale-[1.02]">
-                            <img src="${item.image_url}" class="w-full aspect-square object-cover bg-slate-700" alt="${item.title}">
-                            <div class="p-4">
-                                <h3 class="font-bold text-lg text-blue-300 uppercase text-sm tracking-wider">${item.title}</h3>
+                if (error) throw error;
+
+                wadahGallery.innerHTML = '';
+
+                if (data && data.length > 0) {
+                    data.forEach(item => {
+                        const card = `
+                            <div class="bg-slate-800 rounded-xl overflow-hidden shadow-lg border border-slate-700">
+                                <img src="${item.image_url}" class="w-full aspect-square object-cover" onerror="this.src='https://via.placeholder.com/400?text=Link+Foto+Salah'">
+                                <div class="p-4">
+                                    <h3 class="font-bold text-lg text-blue-300">${item.title || 'Tanpa Judul'}</h3>
+                                </div>
                             </div>
-                        </div>
-                    `;
-                    wadahGallery.innerHTML += card;
-                });
-            } else {
-                wadahGallery.innerHTML = '<p class="text-center col-span-full py-20 text-slate-500">Belum ada foto. Upload dulu lewat halaman Admin!</p>';
+                        `;
+                        wadahGallery.innerHTML += card;
+                    });
+                } else {
+                    wadahGallery.innerHTML = '<p class="text-center col-span-full py-20 text-slate-500">Database kosong. Coba upload lagi di Admin.</p>';
+                }
+            } catch (err) {
+                console.error(err);
+                wadahGallery.innerHTML = `<p class="text-center col-span-full text-red-500 font-mono text-sm">Error: ${err.message}</p>`;
             }
         }
 
